@@ -19,7 +19,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        'cbpro'
+        'cbpro',
+        'python-dateutil'
     ]
     python_requires='>=3.6',
 )

@@ -1,4 +1,3 @@
-from cbpro import WebsocketClient
 import sqlite3
 from decimal import Decimal
 from .candle import Candle
@@ -15,24 +14,24 @@ class CoinbaseProCandleDatabase(object):
     def __init__(self, db_file):
         self.db_file = db_file
         sqlite3.register_adapter(Decimal, adapt_decimal)
-        sqlite3.register_converted("decimal", convert_decimal)
+        sqlite3.register_converter("decimal", convert_decimal)
         if not self.candle_table_exists():
             self.create_candle_table()
 
     def conn(self):
-        conn = sqlite3.connect(self.db_file, 
+        conn = sqlite3.connect(self.db_file,
                                 detect_types=sqlite3.PARSE_DECLTYPES |
                                 sqlite3.PARSE_COLNAMES)
         return conn
 
-    def candle_table_exists(self, table_name):
+    def candle_table_exists(self):
 
         table_exists = False
 
         conn = self.conn()
         c = conn.cursor()
 
-        c.execute('''SELECT name FROM sqlite_master WHERE type='table' AND name='candles';''')
+        c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='candles';''')
 
         if c.fetchone()[0] == 1:
             table_exists = True
@@ -40,14 +39,16 @@ class CoinbaseProCandleDatabase(object):
         conn.commit()
         conn.close()
 
+        return table_exists
+
     def create_candle_table(self):
 
         conn = self.conn()
         c = conn.cursor()
 
         c.execute('''CREATE TABLE candles
-                    (product_id text, granularity integer, timestamp datetime, open decimal, 
-                    high decimal, low decimal, close decimal, volume decimal)'''))
+                    (product_id text, granularity integer, timestamp datetime, open decimal,
+                    high decimal, low decimal, close decimal, volume decimal)''')
 
         conn.commit()
 
@@ -69,7 +70,7 @@ class CoinbaseProCandleDatabase(object):
 
         conn.commit()
         conn.close()
-            
 
 
-    
+
+
