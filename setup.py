@@ -21,6 +21,6 @@ setuptools.setup(
     install_requires=[
         'cbpro',
         'python-dateutil'
-    ]
+    ],
     python_requires='>=3.6',
 )
